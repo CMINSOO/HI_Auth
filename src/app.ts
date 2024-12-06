@@ -1,30 +1,42 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import * as dotenv from "dotenv";
 import { myDataSource } from "./config/database.config";
 import { mainRouter } from "./routes/main.routes";
 import { errorHandler } from "./middleware/error-handler.middleware";
+import { AuthRepository } from "./auth/auth.repository";
 
 dotenv.config();
 
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 const app: express.Express = express();
 app.use(express.json());
 
+// 서버 활성화 확인 라우트
 app.get("/", (req: Request, res: Response) => {
   res.send("서버 활성화");
 });
 
-app.use("/", mainRouter);
-
-app.use(errorHandler);
-
+// 데이터베이스 초기화 후 미들웨어 설정
 myDataSource
   .initialize()
   .then(() => {
     console.log("디비 연결성공");
 
+    // userRepository 주입 미들웨어
+    app.use((req: Request, res: Response, next: NextFunction) => {
+      req.userRepository = myDataSource.getRepository(AuthRepository);
+      next();
+    });
+
+    // 메인 라우터 등록
+    app.use("/", mainRouter);
+
+    // 글로벌 에러 핸들러는 맨 마지막에 위치
+    app.use(errorHandler);
+
+    // 서버 실행
     app.listen(port, () => {
-      console.log(`${port} 번에서 서버실행중`);
+      console.log(`${port} 번에서 서버 실행 중`);
     });
   })
   .catch((err) => {
