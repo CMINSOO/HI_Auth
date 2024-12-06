@@ -7,6 +7,9 @@ export class Token {
   id!: number;
 
   @Column()
+  userId!: number;
+
+  @Column()
   refreshToken!: string;
 
   @Column()
