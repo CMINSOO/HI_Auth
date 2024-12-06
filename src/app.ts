@@ -1,6 +1,8 @@
 import express, { Request, Response } from "express";
 import * as dotenv from "dotenv";
 import { myDataSource } from "./config/database.config";
+import { mainRouter } from "./routes/main.routes";
+import { errorHandler } from "./middleware/error-handler.middleware";
 
 dotenv.config();
 
@@ -11,6 +13,10 @@ app.use(express.json());
 app.get("/", (req: Request, res: Response) => {
   res.send("서버 활성화");
 });
+
+app.use("/", mainRouter);
+
+app.use(errorHandler);
 
 myDataSource
   .initialize()
