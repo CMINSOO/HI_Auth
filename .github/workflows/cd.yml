@@ -46,7 +46,7 @@ jobs:
 
             echo "Restarting server using PM2..."
             pm2 delete HI_AUTH || true
-            pm2 --name HI_AUTH start dist/src/app.js
+            pm2 --name HI_AUTH start dist/app.js
             pm2 save
 
             echo "Deployment completed successfully."
