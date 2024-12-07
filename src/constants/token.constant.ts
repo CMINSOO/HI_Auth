@@ -50,7 +50,10 @@ const {
   REFRESH_TOKEN_EXPIRE,
 } = envVars;
 
+const HASH_ROUND = process.env.HASH_ROUND;
+
 export {
+  HASH_ROUND,
   ACCESS_TOKEN_SECRET,
   ACCESS_TOKEN_EXPIRE,
   REFRESH_TOKEN_SECRET,
