@@ -3,10 +3,10 @@ name: OneMonth Auth CI
 on: # 언제 실행될지 정의
   workflow_dispatch: # 수동 실행
   push: # PUSH 됐을 때
-    branches: [dev] # main 브랜치
+    branches: [main] # main 브랜치
   pull_request: # PR
     types: [opened, reopened, synchronize] # PR 이벤트
-    branches: [dev] # main 브랜치 #테스트용으로 dev로변경
+    branches: [main] # main 브랜치 #테스트용으로 dev로변경
 
 jobs:
   ci-test:
