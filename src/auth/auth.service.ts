@@ -1,4 +1,4 @@
-import { REFRESH_TOKEN_EXPIRE } from "../constants/token.constant";
+import { HASH_ROUND, REFRESH_TOKEN_EXPIRE } from "../constants/token.constant";
 import { doubleCheckPW } from "../utils/common-auth.util";
 import { calculateExpireAt, createToken } from "../utils/create-token.util";
 import { AuthRepository } from "./auth.repository";
@@ -19,7 +19,7 @@ export class AuthService {
       throw new Error("이미 가입된 유저입니다.");
     }
 
-    const hashedPassword = bcrypt.hashSync(password, 10);
+    const hashedPassword = bcrypt.hashSync(password, HASH_ROUND!);
 
     const user = await this.authRepository.createUser(
       username,
