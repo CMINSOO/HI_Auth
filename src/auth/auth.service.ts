@@ -12,13 +12,13 @@ export class AuthService {
   signUp = async (signUpInput: SignUpDto) => {
     const { username, password, confirmPassword, nickname } = signUpInput;
 
+    doubleCheckPW(password, confirmPassword);
+
     const existUser = await this.authRepository.getUserByUsername(username);
     //TODO: 글로벌 에러핸들링 constant 만들어서 처리하기 w/ statusCode
     if (existUser) {
       throw new Error("이미 가입된 유저입니다.");
     }
-
-    doubleCheckPW(password, confirmPassword);
 
     //TODO: SaltRound 상수값으로 빼주기
     const hashedPassword = bcrypt.hashSync(password, 10);
@@ -34,7 +34,7 @@ export class AuthService {
       nickname: user.nickname,
       authorities: [
         {
-          authorityName: user.authorityName,
+          authorityName: user.authorityName || "ROLE_USER",
         },
       ],
     };
