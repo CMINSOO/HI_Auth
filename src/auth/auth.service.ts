@@ -15,12 +15,10 @@ export class AuthService {
     doubleCheckPW(password, confirmPassword);
 
     const existUser = await this.authRepository.getUserByUsername(username);
-    //TODO: 글로벌 에러핸들링 constant 만들어서 처리하기 w/ statusCode
     if (existUser) {
       throw new Error("이미 가입된 유저입니다.");
     }
 
-    //TODO: SaltRound 상수값으로 빼주기
     const hashedPassword = bcrypt.hashSync(password, 10);
 
     const user = await this.authRepository.createUser(
@@ -46,13 +44,11 @@ export class AuthService {
     const { username, password } = signInInput;
 
     const user = await this.authRepository.getUserByUsername(username);
-    //TODO: 에러처리 상수화
     if (!user) {
       throw new Error("존재하지 않는 사용자입니다.");
     }
 
     const comparePW = await this.authRepository.comparePW(user.id, password);
-    //TODO: 에러처리
     if (!comparePW) {
       throw new Error("비밀번호를 확인해주세요");
     }
