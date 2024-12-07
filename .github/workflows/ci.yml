@@ -1,57 +1,42 @@
-name: OneMonth Auth CD
+name: OneMonth Auth CI
 
-on:
+on: # 언제 실행될지 정의
   workflow_dispatch: # 수동 실행
+  push: # PUSH 됐을 때
+    branches: [dev] # main 브랜치
+  pull_request: # PR
+    types: [opened, reopened, synchronize] # PR 이벤트
+    branches: [dev] # main 브랜치 #테스트용으로 dev로변경
 
 jobs:
-  deploy:
+  ci-test:
     runs-on: ubuntu-24.04
 
     steps:
+      # 1. 소스 코드 가져오기
       - name: Checkout source code
         uses: actions/checkout@v4
 
+      # 2. Node.js 환경 설정
       - name: Setup Node.js environment
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
 
-      # .env 파일 생성
-      - name: Create .env file
+      # 3. 의존성 설치
+      - name: Install dependencies
+        run: npm ci
+
+      # 4. 환경 변수 설정
+      - name: Create and load .env file
         run: |
           echo "${{ secrets.ENV }}" > .env
           sed -i 's/ *= */=/g' .env # 공백 제거
           sed -i 's/^\"//g; s/\"$//g' .env # 따옴표 제거
           sed -i "s/'//g" .env # 작은따옴표 제거
+          cat .env # 디버깅용으로 생성된 .env 파일 출력
 
-      # Node.js 애플리케이션 빌드 및 실행
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build application
-        run: npm run build
-
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.AWS_EC2_HOST }}
-          username: ${{ secrets.AWS_EC2_USERNAME }}
-          key: ${{ secrets.AWS_EC2_PEM_KEY }}
-          port: ${{ secrets.AWS_EC2_PORT }}
-          script: |
-            export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
-            cd /home/ubuntu/HI_AUTH
-            git switch main
-            git pull origin main
-            echo "${{ secrets.ENV }}" > .env
-            sed -i 's/ *= */=/g' .env
-            sed -i 's/^\"//g; s/\"$//g' .env
-            sed -i "s/'//g" .env
-            npm ci
-            npm run build
-            pm2 delete HI_AUTH || true
-            pm2 --name HI_AUTH start dist/src/app.js
-            pm2 save
+      # 5. 테스트 코드 실행
+      - name: Run tests
+        run: npm run test
