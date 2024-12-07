@@ -4,12 +4,14 @@ import { myDataSource } from "./config/database.config";
 import { mainRouter } from "./routes/main.routes";
 import { errorHandler } from "./middleware/error-handler.middleware";
 import { AuthRepository } from "./auth/auth.repository";
-
+import swaggerUi from "swagger-ui-express"; //ui 설정할 수 있는 모듈 불러오기
+const swaggerJson = require("../src/swagger/swagger.json");
 dotenv.config();
 
 const port = process.env.PORT || 3000;
 const app: express.Express = express();
 app.use(express.json());
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerJson));
 
 // 서버 활성화 확인 라우트
 app.get("/", (req: Request, res: Response) => {
