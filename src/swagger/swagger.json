@@ -1,0 +1,176 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "한달인턴 과제",
+    "version": "1.0.0",
+    "title": "Auth 테스트용 스웨거",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "auth",
+      "description": "회원가입 및 로그인 기능"
+    }
+  ],
+  "schemes": ["http"],
+  "paths": {
+    "/auth/signUp": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "회원가입",
+        "operationId": "signUp",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "회원가입시 필요한 데이터를 입력합니다.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SignUpRequest"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "회원가입이 완료되었습니다.",
+            "schema": {
+              "$ref": "#/definitions/UserResponse"
+            }
+          },
+          "400": {
+            "description": "잘못된 요청 데이터입니다."
+          }
+        }
+      }
+    },
+    "/auth/signIn": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "로그인",
+        "operationId": "signIn",
+        "consumes": ["application/json"],
+        "produces": ["application/json"],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "로그인에 필요한 사용자 정보를 입력합니다.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SignInRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "로그인에 성공하였습니다.",
+            "schema": {
+              "$ref": "#/definitions/AuthResponse"
+            }
+          },
+          "401": {
+            "description": "잘못된 인증 정보입니다."
+          }
+        }
+      }
+    }
+  },
+  "securityDefinitions": {
+    "bearerAuth": {
+      "type": "apiKey",
+      "name": "Authorization",
+      "in": "header"
+    }
+  },
+  "definitions": {
+    "SignUpRequest": {
+      "type": "object",
+      "required": ["username", "password", "confirmPassword", "nickname"],
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "testUser"
+        },
+        "password": {
+          "type": "string",
+          "example": "Test@1234"
+        },
+        "confirmPassword": {
+          "type": "string",
+          "example": "Test@1234"
+        },
+        "nickname": {
+          "type": "string",
+          "example": "김치"
+        }
+      }
+    },
+    "SignInRequest": {
+      "type": "object",
+      "required": ["username", "password"],
+      "properties": {
+        "username": {
+          "type": "string",
+          "example": "testUser"
+        },
+        "password": {
+          "type": "string",
+          "example": "Test@1234"
+        }
+      }
+    },
+    "AuthResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "integer",
+          "example": 200
+        },
+        "message": {
+          "type": "string",
+          "example": "로그인에 성공하였습니다"
+        },
+        "user": {
+          "type": "object",
+          "properties": {
+            "token": {
+              "type": "string",
+              "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwYXlsb2FkIjp7ImlkIjo1fSwiaWF0IjoxNzMzNTU5OTUwLCJleHAiOjE3MzM1NjM1NTB9._dI7mK53AiMwx0OMUdzcoJ9QguuTHEYOoMpULyyPl8I"
+            }
+          }
+        }
+      }
+    },
+    "UserResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "example": 1
+        },
+        "username": {
+          "type": "string",
+          "example": "testUser"
+        },
+        "nickname": {
+          "type": "string",
+          "example": "TestNick"
+        },
+        "authorities": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "example": "ROLE_USER"
+          }
+        }
+      }
+    }
+  }
+}
