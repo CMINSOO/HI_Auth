@@ -49,7 +49,6 @@ export class AuthRepository {
     if (existUser) {
       existUser.refreshToken = token;
       existUser.expireAt = expireAt;
-      console.log("여기서 걸려야한다");
       await this.tokenRepository.save(existUser);
     } else {
       const data = this.tokenRepository.create({
